@@ -51,7 +51,6 @@ external_declaration: func_definition
     ;
 
 func_definition: TK_FUNC TK_ID '(' ')' block_statement
-    /**/| TK_FUNC TK_ID '(' parameters_type_list ')' '{' '}'
     | TK_FUNC TK_ID '(' ')' '{' '}'
     ;
 
@@ -72,7 +71,7 @@ declarator: TK_ID
     | TK_ID '[' ']'
     ;
 
-initializer: assignment_expression
+initializer: '='assignment_expression
     | init_list
     ;
 
@@ -99,7 +98,6 @@ relational_expression: relational_expression '>' additive_expression
     | relational_expression TK_LESS_OR_EQUAL additive_expression
     | additive_expression
     ;
-
 additive_expression:  additive_expression '+' multiplicative_expression
     | additive_expression '-' multiplicative_expression
     | multiplicative_expression
@@ -117,7 +115,6 @@ single_expression: TK_NOT single_expression
 postfix_expression: primary_expression
     | postfix_expression '[' expression ']'
     | postfix_expression '(' ')'
-//  | postfix_expression '(' argument_expression_list ')'
     | postfix_expression TK_PLUS_PLUS
     | postfix_expression TK_MINUS_MINUS
     ;
