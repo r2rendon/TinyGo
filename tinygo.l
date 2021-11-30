@@ -56,14 +56,14 @@ DIGIT [0-9]
 "}" {return '}';}
 "/" {return '/' ;}
 "/=" {return TK_DIVIDE_EQUAL;}
-"++" {return TK_PLUSPLUS ;}
+"++" {return TK_PLUS_PLUS ;}
 "=" {return '=' ;}
 ":=" {return TK_ASIG;}
 "," {return ',' ;}
 ";" {return ';';}
 "%" {return '%' ;}
 "%=" {return TK_MOD_EQUAL;}
-"--" {return TK_MINUSMINUS ;}
+"--" {return TK_MINUS_MINUS ;}
 "!" {return '!';}
 ":" {return ':';}
 
