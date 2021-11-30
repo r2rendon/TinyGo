@@ -51,7 +51,7 @@ DIGIT [0-9]
 "*=" {return TK_TIMES_EQUAL;}
 "^=" {return TK_EXPONENT_EQUAL;}
 ">" {return '>' ;}
-">=" {return TK_GREATER_EQUAL;}
+">=" {return TK_GREATER_OR_EQUAL;}
 "{" {return '{';}
 "}" {return '}';}
 "/" {return '/' ;}
