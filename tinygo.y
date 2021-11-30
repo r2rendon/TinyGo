@@ -28,7 +28,10 @@
 %token TK_OR TK_AND
 %token TK_NOT_EQUAL TK_GREATER_OR_EQUAL TK_LESS_OR_EQUAL TK_TIMES_EQUAL TK_EXPONENT_EQUAL TK_DIVIDE_EQUAL TK_MOD_EQUAL
 
+%%
+
 start: package_list input
+    ;
 
 package_list: /* vacio */
     | package_list package
@@ -47,9 +50,9 @@ external_declaration: func_definition
     | declarations
     ;
 
-func_definition: TK_FUNC TK_ID '(' parameters_type_list ')' block_statement 
-    | TK_FUNC TK_ID '(' ')' block_statement
-    | TK_FUNC TK_ID '(' parameters_type_list ')' '{' '}'
+func_definition:
+     TK_FUNC TK_ID '(' ')' block_statement
+//  | TK_FUNC TK_ID '(' parameters_type_list ')' '{' '}'
     | TK_FUNC TK_ID '(' ')' '{' '}'
     ;
 
@@ -102,9 +105,9 @@ additive_expression:  additive_expression '+' multiplicative_expression
     | multiplicative_expression
     ;
 
-multiplicative_expression: multiplicative_expression '*' single_expression { $$ = new MulExpr($1, $3, yylineno); }
-    | multiplicative_expression '/' single_expression { $$ = new DivExpr($1, $3, yylineno); }
-    | single_expression {$$ = $1;}
+multiplicative_expression: multiplicative_expression '*' single_expression
+    | multiplicative_expression '/' single_expression
+    | single_expression
     ;
 
 single_expression: TK_NOT single_expression
@@ -114,7 +117,7 @@ single_expression: TK_NOT single_expression
 postfix_expression: primary_expression
     | postfix_expression '[' expression ']'
     | postfix_expression '(' ')'
-    | postfix_expression '(' argument_expression_list ')'
+//  | postfix_expression '(' argument_expression_list ')'
     | postfix_expression TK_PLUS_PLUS
     | postfix_expression TK_MINUS_MINUS
     ;
