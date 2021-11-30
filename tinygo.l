@@ -23,6 +23,7 @@ DIGIT [0-9]
 "int" { return TK_INT_TYPE; }
 "float32" { return TK_FLOAT_TYPE;  }
 "bool" { return TK_BOOL_TYPE; }
+"string" { return TK_STRING_TYPE; }
 "var" {return TK_VAR;}
 "fmt.Println" { return TK_PRINT; }
 "for" {return TK_FOR;}
@@ -30,6 +31,7 @@ DIGIT [0-9]
 "return" {return TK_RETURN ;}
 "true" {return TK_TRUE;}
 "false" {return TK_FALSE ;}
+"func main()" {return TK_MAIN ;}
 "+" {return '+' ;}
 "+=" {return TK_PLUS_EQUAL;}
 "&=" {return TK_AND_EQUAL;}
@@ -40,7 +42,7 @@ DIGIT [0-9]
 ")" {return ')';}
 "-" {return '-';}
 "-=" {return TK_MINUS_EQUAL;}
-"|=" {return TK_ORQUAL;}
+"|=" {return TK_OR_EQUAL;}
 "||" {return TK_OR;}
 "<" {return '<' ;}
 "<=" {return TK_LESS_OR_EQUAL ;}
