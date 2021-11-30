@@ -50,9 +50,8 @@ external_declaration: func_definition
     | declarations
     ;
 
-func_definition:
-     TK_FUNC TK_ID '(' ')' block_statement
-//  | TK_FUNC TK_ID '(' parameters_type_list ')' '{' '}'
+func_definition: TK_FUNC TK_ID '(' ')' block_statement
+    /**/| TK_FUNC TK_ID '(' parameters_type_list ')' '{' '}'
     | TK_FUNC TK_ID '(' ')' '{' '}'
     ;
 
@@ -99,6 +98,7 @@ relational_expression: relational_expression '>' additive_expression
     | relational_expression TK_GREATER_OR_EQUAL additive_expression
     | relational_expression TK_LESS_OR_EQUAL additive_expression
     | additive_expression
+    ;
 
 additive_expression:  additive_expression '+' multiplicative_expression
     | additive_expression '-' multiplicative_expression
