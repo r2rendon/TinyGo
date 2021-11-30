@@ -24,45 +24,45 @@ DIGIT [0-9]
 "float32" { return TK_FLOAT_TYPE;  }
 "bool" { return TK_BOOL_TYPE; }
 "var" {return TK_VAR;}
-"println" { return TK_PRINT; }
+"fmt.Println" { return TK_PRINT; }
 "for" {return TK_FOR;}
 "import" {return TK_IMPORT;}
 "return" {return TK_RETURN ;}
 "true" {return TK_TRUE;}
 "false" {return TK_FALSE ;}
 "+" {return '+' ;}
-"+=" {return TK_PLUSEQUAL;}
-"&=" {return TK_ANDEQUAL;}
+"+=" {return TK_PLUS_EQUAL;}
+"&=" {return TK_AND_EQUAL;}
 "&&" {return TK_AND ;}
-"==" {return TK_EQUALEQUAL;}
-"!=" {return TK_NOTEQUAL ;}
+"==" {return TK_EQUAL_EQUAL;}
+"!=" {return TK_NOT_EQUAL ;}
 "(" {return '(';}
 ")" {return ')';}
 "-" {return '-';}
-"-=" {return TK_MINUSEQUAL;}
+"-=" {return TK_MINUS_EQUAL;}
 "|=" {return TK_ORQUAL;}
 "||" {return TK_OR;}
 "<" {return '<' ;}
-"<=" {return TK_MINUSEQUAL ;}
+"<=" {return TK_LESS_OR_EQUAL ;}
 "[" {return '[';}
 "]" {return ']';}
 "*" {return '*';}
 "^" {return '^';}
-"*=" {return TK_TIMESEQUAL;}
-"^=" {return TK_EXPONENTEQUAL;}
+"*=" {return TK_TIMES_EQUAL;}
+"^=" {return TK_EXPONENT_EQUAL;}
 ">" {return '>' ;}
-">=" {return TK_GREATEREQUAL;}
+">=" {return TK_GREATER_EQUAL;}
 "{" {return '{';}
 "}" {return '}';}
 "/" {return '/' ;}
-"/=" {return TK_DIVIDEEQUAL;}
+"/=" {return TK_DIVIDE_EQUAL;}
 "++" {return TK_PLUSPLUS ;}
 "=" {return '=' ;}
 ":=" {return TK_ASIG;}
 "," {return ',' ;}
 ";" {return ';';}
 "%" {return '%' ;}
-"%=" {return TK_MODEQUAL;}
+"%=" {return TK_MOD_EQUAL;}
 "--" {return TK_MINUSMINUS ;}
 "!" {return '!';}
 ":" {return ':';}
