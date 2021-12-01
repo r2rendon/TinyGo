@@ -52,10 +52,20 @@ external_declaration: func_definition
 
 func_definition: TK_FUNC TK_ID '(' ')' block_statement
     | TK_FUNC TK_ID '(' ')' '{' '}'
+    |TK_ID '(' parameters_type_list ')' block_statement
     ;
 
 declarations: declarations declaration
     | declaration
+    ;
+
+parameters_type_list: parameters_type_list ',' parameter_declaration 
+                   | parameter_declaration
+    ;
+
+parameter_declaration: type declarator 
+                     | type 
+                     | type '[' ']'
     ;
 
 declaration: TK_VAR declarator_list type
@@ -146,6 +156,7 @@ statement: expression_statement
     | block_statement
     | return_statement
     | TK_PRINT expression
+    | TK_PRINT '(' parameters_type_list')'
     | for_statement
     ;
 
@@ -165,6 +176,7 @@ expression_statement: expression
     ;
 
 assignment_operator: '='
+    | TK_ASIG
     | TK_PLUS_EQUAL
     | TK_MINUS_EQUAL
     | TK_AND_EQUAL

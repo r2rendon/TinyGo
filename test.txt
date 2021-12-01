@@ -1,15 +1,43 @@
-package main 
+package main
+
 import "fmt"
 
-func hola(){
+import  "math/rand"
 
-}
+
 
 func main() {
 
-var a int = 2
+   /*
 
-if 1 a=2
+   Operadores basicos
+
+   */
+
+   fmt.Println(a)
+
+   fmt.Println("b = ")
+
+   fmt.Println("a+b = ")
+
+   fmt.Println("a-b = ")
+
+   fmt.Println("a*b = ")   
+
+   fmt.Println("a/b = ")
+
+   //fmt.Println("a%b = ")
+
+   fmt.Println("a>b = ")
+
+   fmt.Println("a<b = ")
+
+   fmt.Println("a>=b = ")
+
+   fmt.Println("a<=b = ")
+
+   fmt.Println("true&&true = ")
+
+
 
 }
-
