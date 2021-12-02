@@ -15,7 +15,7 @@ func main() {
   var c = 8
 
 	
-  if a%2=0 {
+  if a=0 {
 
     fmt.Println("a is even")
 
@@ -27,7 +27,7 @@ func main() {
 
    
 
-  if b%4 == 0 {
+  if b == 0 {
 
     fmt.Println("8 is divisible by 4")
 

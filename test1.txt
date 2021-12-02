@@ -10,7 +10,7 @@ import "fmt"
 
 func bubbleSort(){
 
-swapped = true
+swapped = 1
 
 for swapped {
 
@@ -22,7 +22,7 @@ if input[i-1] > input[i] {
 
 input[i], input[i-1] = input[i-1], input[i]
 
-swapped = true
+swapped = 1
 
 }
 
