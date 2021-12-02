@@ -52,7 +52,7 @@ external_declaration: func_definition
 
 func_definition: TK_FUNC TK_ID '(' ')' block_statement
     | TK_FUNC TK_ID '(' ')' '{' '}'
-    |TK_ID '(' parameters_type_list ')' block_statement
+    | TK_FUNC TK_ID '(' parameters_type_list ')' block_statement
     ;
 
 declarations: declarations declaration
@@ -60,12 +60,14 @@ declarations: declarations declaration
     ;
 
 parameters_type_list: parameters_type_list ',' parameter_declaration 
-                   | parameter_declaration
+    | parameter_declaration
+    | declarator
     ;
 
 parameter_declaration: type declarator 
-                     | type 
-                     | type '[' ']'
+    | type 
+    | type '[' ']'
+    | type '[' ']'
     ;
 
 declaration: TK_VAR declarator_list type
@@ -78,7 +80,7 @@ declarator_list: declarator_list ',' declarator
     ;
 
 declarator: TK_ID
-    | TK_ID '[' ']'
+    | TK_ID '[' expression ']'
     ;
 
 initializer: '='assignment_expression
@@ -108,6 +110,7 @@ relational_expression: relational_expression '>' additive_expression
     | relational_expression TK_LESS_OR_EQUAL additive_expression
     | additive_expression
     ;
+
 additive_expression:  additive_expression '+' multiplicative_expression
     | additive_expression '-' multiplicative_expression
     | multiplicative_expression
@@ -125,8 +128,14 @@ single_expression: TK_NOT single_expression
 postfix_expression: primary_expression
     | postfix_expression '[' expression ']'
     | postfix_expression '(' ')'
+    | postfix_expression '(' parameters_type_list ')'
     | postfix_expression TK_PLUS_PLUS
     | postfix_expression TK_MINUS_MINUS
+    | '[' ']' type '{' array_initializer_expression '}'
+    ;
+
+array_initializer_expression: array_initializer_expression ',' constant
+    | constant
     ;
 
 primary_expression: '(' expression ')'
@@ -138,8 +147,14 @@ primary_expression: '(' expression ')'
 expression: assignment_expression
     ;
 
-assignment_expression: single_expression assignment_operator assignment_expression
+assignment_expression: single_expression_list assignment_operator assignment_expression
+    | single_expression assignment_operator assignment_expression
     | logical_or_expression
+    | single_expression_list
+    ;
+
+single_expression_list: single_expression_list ',' single_expression
+    | single_expression
     ;
 
 block_statement: '{' statements '}'
@@ -155,8 +170,8 @@ statement: expression_statement
     | if_statement
     | block_statement
     | return_statement
-    | TK_PRINT expression
     | TK_PRINT '(' parameters_type_list')'
+    | TK_PRINT '(' TK_LIT_STRING')'
     | for_statement
     | TK_CONTINUE
     ;
@@ -192,6 +207,9 @@ assignment_operator: '='
 constant: TK_LIT_INT
     | TK_LIT_FLOAT
     | TK_LIT_STRING
+    | TK_LIT_STRING
+    | TK_TRUE
+    | TK_FALSE
     ;
 
 type: TK_INT_TYPE

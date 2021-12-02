@@ -8,9 +8,9 @@ import "fmt"
 
 
 
-func bubbleSort(){
+func bubbleSort(int x, float32 y){
 
-swapped = 1
+swapped = true
 
 for swapped {
 
@@ -22,7 +22,7 @@ if input[i-1] > input[i] {
 
 input[i], input[i-1] = input[i-1], input[i]
 
-swapped = 1
+swapped = true
 
 }
 
