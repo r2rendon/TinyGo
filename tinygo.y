@@ -158,6 +158,7 @@ statement: expression_statement
     | TK_PRINT expression
     | TK_PRINT '(' parameters_type_list')'
     | for_statement
+    | TK_CONTINUE
     ;
 
 if_statement: TK_IF expression statement
@@ -166,7 +167,7 @@ if_statement: TK_IF expression statement
 
 for_statement: TK_FOR expression statement
     | TK_FOR statement
-    | TK_FOR assignment_operator ';' expression ';' additive_expression statement
+    | TK_FOR assignment_expression ';' expression ';' additive_expression statement
     ;
 
 return_statement: TK_RETURN expression
