@@ -10,12 +10,9 @@ func main() {
 
   */
 
-  var a int 
-  var b int = 5
-  var c = 8
+  var a, b int = 5, 8
 
-	
-  if a=0 {
+  if a%2 == 0 {
 
     fmt.Println("a is even")
 
@@ -25,9 +22,7 @@ func main() {
 
   }
 
-   
-
-  if b == 0 {
+  if b%4 == 0 {
 
     fmt.Println("8 is divisible by 4")
 

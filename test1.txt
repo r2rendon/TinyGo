@@ -1,36 +1,28 @@
-// You can edit this code!
-
-// Click here and start typing.
-
 package main
 
 import "fmt"
 
 
 
-func bubbleSort(int x, float32 y){
+func BubbleSort(array[] int, size int)[]int {
 
-swapped = true
+  for i:=0; i< size-1; i++ {
 
-for swapped {
+   for j:=0; j < size-i-1; j++ {
 
-swapped = false
+     if (array[j] > array[j+1]) {
 
-for i := 1; i < len(input); i++ {
+      array[j] = array[j+1]
 
-if input[i-1] > input[i] {
+      array[j+1] = array[j]
 
-input[i], input[i-1] = input[i-1], input[i]
+     }
 
-swapped = true
+   }
 
-}
+  }
 
-}
-
-}
-
-return input
+  return array
 
 }
 
@@ -38,15 +30,10 @@ return input
 
 func main() {
 
-unsorted := []int{10, 6, 2, 1, 5, 8, 3, 4, 7, 9}
+  var size int = 7 
 
-sorted := bubbleSort(unsorted)
+  array := []int{11, 14, 3, 8, 18, 17, 43}
 
-fmt.Println("Sorted Array : ")
-
-
-for i := 0; i < len(sorted); i++ {
-fmt.Println(sorted[i])
-}
+  fmt.Println(BubbleSort(array, size))
 
 }
