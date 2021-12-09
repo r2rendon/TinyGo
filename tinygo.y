@@ -1,3 +1,7 @@
+%code requires{
+    #include "ast.h"
+}
+
 %{
     #include <cstdio>
     using namespace std;
@@ -9,9 +13,9 @@
 
     #define YYERROR_VERBOSE 1
     #define YYDEBUG 1
-    // #define EQUAL 1
-    // #define PLUSEQUAL 2
-    // #define MINUSEQUAL 3
+    #define EQUAL 1
+    #define PLUSEQUAL 2
+    #define MINUSEQUAL 3
 %}
 
 %token TK_LIT_STRING TK_ID TK_MAIN
@@ -209,7 +213,6 @@ assignment_operator: '='
 
 constant: TK_LIT_INT
     | TK_LIT_FLOAT
-    | TK_LIT_STRING
     | TK_LIT_STRING
     | TK_TRUE
     | TK_FALSE
