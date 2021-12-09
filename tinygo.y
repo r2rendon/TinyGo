@@ -19,7 +19,7 @@
 %token TK_LIT_FLOAT
 %token TK_IF TK_ELSE
 %token TK_FOR TK_RETURN
-%token TK_INT_TYPE TK_FLOAT_TYPE TK_BOOL_TYPE TK_STRING_TYPE TK_VAR 
+%token TK_INT_TYPE TK_FLOAT_TYPE TK_BOOL_TYPE TK_STRING_TYPE TK_VAR
 %token TK_ASIG
 %token TK_PRINT TK_BREAK TK_FUNC TK_PACKAGE TK_CONTINUE
 %token TK_IMPORT TK_TRUE TK_FALSE
@@ -118,6 +118,7 @@ additive_expression:  additive_expression '+' multiplicative_expression
 
 multiplicative_expression: multiplicative_expression '*' single_expression
     | multiplicative_expression '/' single_expression
+    | multiplicative_expression '%' single_expression
     | single_expression
     ;
 
@@ -172,8 +173,10 @@ statement: expression_statement
     | return_statement
     | TK_PRINT '(' parameters_type_list')'
     | TK_PRINT '(' TK_LIT_STRING')'
+    | TK_PRINT '(' TK_LIT_STRING ',' parameters_type_list')'
     | for_statement
     | TK_CONTINUE
+    | TK_BREAK
     ;
 
 if_statement: TK_IF expression statement
