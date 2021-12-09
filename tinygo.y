@@ -44,6 +44,7 @@
     Parameter * parameter_t;
     ParameterList * parameter_list_t;
     ArrayInitializerExpression * array_initializer_expression_t;
+    SingleExprList * single_expr_list_t;
 }
 
 %token TK_MAIN
@@ -80,6 +81,7 @@
 // %type<argument_list_t> argument_expression_list
 %type <statement_t> if_statement for_statement expression_statement
 %type <array_initializer_expression_t> array_initializer_expression
+%type <single_expr_list_t> single_expression_list
 // TO-DO que sea $1 por packages
 %%
 
@@ -142,8 +144,11 @@ parameter_declaration: type declarator { $$ = new Parameter((Type)$1, $2, false,
     ;
 
 declaration: TK_VAR declarator_list type { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
-    | TK_VAR declarator_list type initializer { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
-    | TK_VAR declarator_list initializer 
+    | TK_VAR declarator_list type initializer { $$ = new Declaration((Type)$3, *$2, *$4, yylineno); delete $2;  }
+    | TK_VAR declarator_list initializer { 
+        $$ = new Declaration(Type::infered, *$2, *$3, yylineno); 
+        delete $2;
+    }
     ;
 
 declarator_list: declarator_list ',' declarator { $$ = $1; $$->push_back($3); }
@@ -207,7 +212,7 @@ postfix_expression: primary_expression {$$ = $1;}
     | postfix_expression '(' parameters_type_list ')' { $$ = new MethodInvocationExpr((IdExpr*)$1, *$3, yylineno); }
     | postfix_expression TK_PLUS_PLUS { $$ = new PostIncrementExpr((IdExpr*)$1, yylineno); }
     | postfix_expression TK_MINUS_MINUS { $$ = new PostDecrementExpr((IdExpr*)$1, yylineno); }
-    | '[' ']' type '{' array_initializer_expression '}' 
+    | '[' ']' type '{' array_initializer_expression '}' { $$ = new ArrayInitializerExpression($3, *$5, yylineno)}
     ;
 
 array_initializer_expression: array_initializer_expression ',' constant { $$ = $1; $$->push_back($3); }
@@ -223,14 +228,14 @@ primary_expression: '(' expression ')' {$$ = $2;}
 expression: assignment_expression {$$ = $1;}
     ;
 
-assignment_expression: single_expression_list assignment_operator assignment_expression
+assignment_expression: single_expression assignment_operator assignment_expression
     | single_expression assignment_operator assignment_expression
     | logical_or_expression
-    | single_expression_list
+    | single_expression
     ;
 
-single_expression_list: single_expression_list ',' single_expression
-    | single_expression
+single_expression_list: single_expression_list ',' single_expression { $$ = $1; $$->push_back($3) }
+    | single_expression { $$ = new SingleExpr; $$->push_back($1) }
     ;
 
 block_statement: '{' statements '}' { 
@@ -256,7 +261,7 @@ statement: expression_statement {$$ = $1;}
     | if_statement {$$ = $1;}
     | block_statement {$$ = $1;}
     | return_statement {$$ = $1;}
-    | TK_PRINT '(' parameters_type_list')'
+    | TK_PRINT '(' parameters_type_list')' { $$ = new PrintStatement(*$3, yylineno); }
     | TK_PRINT '(' TK_LIT_STRING')' {
         StringExpr * se = new StringExpr($3, yylineno);
         $$ = new PrintStatement(*se, yylineno);
@@ -268,8 +273,8 @@ statement: expression_statement {$$ = $1;}
         delete se;
     }
     | for_statement {$$ = $1}
-    | TK_CONTINUE
-    | TK_BREAK
+    | TK_CONTINUE { $$ = new ContinueStatement(yylineno); }
+    | TK_BREAK { $$ = new BreakStatement(yylineno); }
     ;
 
 if_statement: TK_IF expression statement {$$ = new IfStatement($2, $3, yylineno);}
@@ -286,7 +291,7 @@ for_statement: TK_FOR expression statement { $$ = new ForStatement($2, $3, yylin
     }
     ;
 
-return_statement: TK_RETURN expression
+return_statement: TK_RETURN expression { $$ = ReturnStatement(*$2, yylineno); }
     ;
 
 expression_statement: expression {$$ = new ExprStatement($1, yylineno);}

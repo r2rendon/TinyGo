@@ -9,12 +9,14 @@ class Init; // InitDeclarator
 class Declaration;
 class Parameter;
 class Statement;
+class SingleExpr;
 typedef list<Expr *> InitializerElementList;
 typedef list<Init *> InitDeclaratorList;
 typedef list<Declaration *> DeclarationList;
 typedef list<Parameter *> ParameterList;
 typedef list<Statement *> StatementList;
 typedef list<Expr *> ArgumentList;
+typedef list<SingleExpr *> SingleExprList;
 
 enum StatementKind{
     FOR_STATEMENT,
@@ -39,7 +41,8 @@ enum Type{
     FLOAT_ARRAY,
     BOOL_ARRAY,
     STRING_ARRAY,
-    BOOL
+    BOOL,
+    INFERED
 };
 
 enum SingleType{
@@ -61,6 +64,7 @@ class Expr{
 
 class Initializer{
     public:
+        Initializer(){}
         Initializer(InitializerElementList expressions, int line){
             this->expressions = expressions;
             this->line = line;
@@ -102,9 +106,17 @@ class Declaration{
             this->declarations = declarations;
             this->line = line;
         }
+        
+        Declaration(Type type, InitDeclaratorList declarations, Initializer initializer, int line){
+            this->type = type;
+            this->declarations = declarations;
+            this->line = line;
+            this->initializer = initializer;
+        }
         Type type;
         InitDeclaratorList declarations;
         int line;
+        Initializer initializer;
         int evaluateSemantic();
 };
 
@@ -389,17 +401,44 @@ class PrintStatement : public Statement{
             this->expr = expr;
             this->line = line;
         }
+        
+        PrintStatement(ParameterList * paramlist, int line){
+            this->paramlist = paramlist;
+            this->line = line;
+        }
+
         Expr * expr;
+        ParameterList * paramlist;
         int evaluateSemantic();
         StatementKind getKind(){return PRINT_STATEMENT;}
 };
 
+class ContinueStatement : public Statement{
+    public:
+        ContinueStatement(int line){
+            this->line = line;
+        }
+        int evaluateSemantic();
+        StatementKind getKind(){return CONTINUE_STATEMENT;}
+};
+
+class BreakStatement : public Statement{
+    public:
+        BreakStatement(int line){
+            this->line = line;
+        }
+        int evaluateSemantic();
+        StatementKind getKind(){return BREAK_STATEMENT;}
+};
+
 class ArrayInitializerExpression : public Expr {
     public:
-        ArrayInitializerExpression(Expr * expr, int line){
+        ArrayInitializerExpression(Type type, Expr * expr, int line){
+            this->type = type;
             this->expr = expr;
             this->line = line;
         }
+        Type type;
         Expr * expr;
         int line;
         Type getType();
