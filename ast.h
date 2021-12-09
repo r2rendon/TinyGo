@@ -34,11 +34,12 @@ enum Type{
     INVALID,
     STRING,
     INT,
-    Float,
+    FLOAT,
     INT_ARRAY,
-    Float_ARRAY,
+    FLOAT_ARRAY,
     BOOL_ARRAY,
     STRING_ARRAY,
+    BOOL
 };
 
 enum SingleType{
