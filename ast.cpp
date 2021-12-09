@@ -159,13 +159,12 @@ int GlobalDeclaration::evaluateSemantic(){
     return 0;
 }
 
-void addMethodDeclaration(string id, int line, Type type, ParameterList params){
+void addMethodDeclaration(string id, int line, ParameterList params){
     if(methods[id] != 0){
         cout<<"redefinition of function "<<id<<" in line: "<<line<<endl;
         exit(0);
     }
     methods[id] = new FunctionInfo();
-    methods[id]->returnType = type;
     methods[id]->parameters = params;
 }
 
@@ -175,7 +174,7 @@ int MethodDefinition::evaluateSemantic(){
     //     exit(0);
     // }
 
-    addMethodDeclaration(this->id, this->line, this->type, this->params);
+    addMethodDeclaration(this->id, this->line, this->params);
     pushContext();
    
     list<Parameter* >::iterator it = this->params.begin();
@@ -235,10 +234,6 @@ Type name##Expr::getType(){\
 
 Type getSingleType(Type expressionType, int unaryOperation){
     switch(unaryOperation){
-        case INCREMENT:
-        case DECREMENT:
-            if(expressionType == INT || expressionType == FLOAT)
-                return expressionType;
         case NOT:
             if(expressionType == BOOL)
                 return BOOL;
@@ -365,12 +360,12 @@ IMPLEMENT_BINARY_GET_TYPE(Sub);
 IMPLEMENT_BINARY_GET_TYPE(Mul);
 IMPLEMENT_BINARY_GET_TYPE(Div);
 IMPLEMENT_BINARY_GET_TYPE(Assign);
-IMPLEMENT_BINARY_EXPR(PlusEqual);
-IMPLEMENT_BINARY_EXPR(MinusEqual);
-IMPLEMENT_BINARY_EXPR(TimesEqual);
-IMPLEMENT_BINARY_EXPR(ExponentEqual);
-IMPLEMENT_BINARY_EXPR(DivideEqual);
-IMPLEMENT_BINARY_EXPR(ModEqual);
+IMPLEMENT_BINARY_GET_TYPE(PlusEqual);
+IMPLEMENT_BINARY_GET_TYPE(MinusEqual);
+IMPLEMENT_BINARY_GET_TYPE(TimesEqual);
+IMPLEMENT_BINARY_GET_TYPE(ExponentEqual);
+IMPLEMENT_BINARY_GET_TYPE(DivideEqual);
+IMPLEMENT_BINARY_GET_TYPE(ModEqual);
 
 IMPLEMENT_BINARY_BOOLEAN_GET_TYPE(Eq);
 IMPLEMENT_BINARY_BOOLEAN_GET_TYPE(Neq);

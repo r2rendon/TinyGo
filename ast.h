@@ -43,8 +43,6 @@ enum Type{
 };
 
 enum SingleType{
-    INCREMENT,
-    DECREMENT,
     NOT
 };
 
@@ -154,15 +152,13 @@ class GlobalDeclaration : public Statement {
 
 class MethodDefinition : public Statement{
     public:
-        MethodDefinition(Type type, string id, ParameterList params, Statement * statement, int line){
-            this->type = type;
+        MethodDefinition(string id, ParameterList params, Statement * statement, int line){
             this->id = id;
             this->params = params;
             this->statement = statement;
             this->line = line;
         }
 
-        Type type;
         string id;
         ParameterList params;
         Statement * statement;
@@ -318,6 +314,38 @@ class IfStatement : public Statement{
         StatementKind getKind(){return IF_STATEMENT;}
 };
 
+class ForStatement : public Statement{
+    public:
+        enum ForTypes {
+            ADDITIVE,
+            CONDITIONAL
+        };
+
+        ForStatement(Expr * conditionalExpr, Statement * loopStatement, int line){
+            this->conditionalExpr = conditionalExpr;
+            this->loopStatement = loopStatement;
+            this->line = line;
+            this->forType = CONDITIONAL;
+        }
+        
+        ForStatement(Expr * assignmentExpression, Expr * conditionalExpr, Expr * additiveExpression, Statement * loopStatement, int line){
+            this->conditionalExpr = conditionalExpr;
+            this->assignmentExpression = assignmentExpression;
+            this->additiveExpression = additiveExpression;
+            this->loopStatement = loopStatement;
+            this->line = line;
+            this->forType = ADDITIVE;
+        }
+
+        Expr * conditionalExpr;
+        Expr * assignmentExpression;
+        Expr * additiveExpression;
+        Statement * loopStatement;
+        int evaluateSemantic();
+        ForTypes forType;
+        StatementKind getKind(){return FOR_STATEMENT;}
+};
+
 class ElseStatement : public Statement{
     public:
         ElseStatement(Expr * conditionalExpr, Statement * trueStatement, Statement * falseStatement, int line){
@@ -364,6 +392,17 @@ class PrintStatement : public Statement{
         Expr * expr;
         int evaluateSemantic();
         StatementKind getKind(){return PRINT_STATEMENT;}
+};
+
+class ArrayInitializerExpression : public Expr {
+    public:
+        ArrayInitializerExpression(Expr * expr, int line){
+            this->expr = expr;
+            this->line = line;
+        }
+        Expr * expr;
+        int line;
+        Type getType();
 };
 
 IMPLEMENT_BINARY_EXPR(Add);
