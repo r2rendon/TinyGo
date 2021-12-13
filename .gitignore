@@ -3,3 +3,4 @@ tinygo_lexer.cpp
 tinygo_parser.cpp
 tokens.h
 tinygo
+.vscode
