@@ -21,6 +21,8 @@ map<string, Type> resultTypes ={
     {"FLOAT,FLOAT", FLOAT},
     {"INT,FLOAT", FLOAT},
     {"FLOAT,INT", FLOAT},
+    {"INFERED,INT", INT},
+    {"INFERED,FLOAT", INT},
 };
 
 string getTypeName(Type type){
@@ -41,6 +43,8 @@ string getTypeName(Type type){
             return "STRING";
         case STRING_ARRAY:
             return "STRING";
+        case INFERED:
+            return "INFERED";
     }
 
     cout<<"Unknown type"<<endl;

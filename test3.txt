@@ -10,7 +10,8 @@ func main() {
 
   */
 
-  var a, b int = 5, 8
+  var a, b int = 1,2
+  var num := 9
 
   if a%2 == 0 {
 
@@ -28,9 +29,7 @@ func main() {
 
   }
 
-
-
-  if num := 9; num < 0 {
+  if num < 0 {
 
     fmt.Println(num, "is negative")
 

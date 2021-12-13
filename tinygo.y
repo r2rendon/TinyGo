@@ -129,7 +129,7 @@ declarations: declarations declaration { $$ = $1; $$->push_back($2); }
     ;
 
 declaration: TK_VAR declarator_list type { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
-    | TK_VAR declarator_list {   $$ = new Declaration((Type)INT, *$2, yylineno); 
+    | TK_VAR declarator_list { $$ = new Declaration((Type)INFERED, *$2, yylineno); 
         delete $2;
     }
     | TK_VAR declarator_list type initializer { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
@@ -167,6 +167,8 @@ initializer: '=' assignment_expression {
         $$ = new Initializer(*list, yylineno);
     }
     | init_list { $$ = new Initializer(*$1, yylineno); delete $1;}
+    | '=' init_list { $$ = new Initializer(*$2, yylineno); delete $2;}
+    | TK_ASIG init_list { $$ = new Initializer(*$2, yylineno); delete $2;}
     | '{' init_list '}'{ $$ = new Initializer(*$2, yylineno); delete $2;  }
     | '[' ']' type  '{' init_list '}'{ $$ = new Initializer(*$5, yylineno); delete $5;  }
 ;
