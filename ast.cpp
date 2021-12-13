@@ -22,7 +22,9 @@ map<string, Type> resultTypes ={
     {"INT,FLOAT", FLOAT},
     {"FLOAT,INT", FLOAT},
     {"INFERED,INT", INT},
-    {"INFERED,FLOAT", INT},
+    {"INT,INFERED", INT},
+    {"INFERED,FLOAT", FLOAT},
+    {"FLOAT,INFERED", FLOAT},
 };
 
 string getTypeName(Type type){
@@ -138,9 +140,10 @@ int Declaration::evaluateSemantic(){
         }
         if(declaration->initializer != NULL){
             list<Expr *>::iterator ite = declaration->initializer->expressions.begin();
+            
             while(ite!= declaration->initializer->expressions.end()){
                 Type exprType = (*ite)->getType();
-                if(exprType != FLOAT && exprType != INT){
+                if(exprType != FLOAT && exprType != INT && exprType != INFERED){
                     cout<<"error: invalid conversion from: "<< getTypeName(exprType) <<" to " <<getTypeName(this->type)<< " line: "<<this->line <<endl;
                     exit(0);
                 }
@@ -170,6 +173,15 @@ void addMethodDeclaration(string id, int line, ParameterList params){
     }
     methods[id] = new FunctionInfo();
     methods[id]->parameters = params;
+
+    // Testing
+    list<Parameter* >::iterator it = params.begin();
+    while(it != params.end()){
+        string test = getTypeName((*it)->type);
+        cout << endl << "Type: " << test << endl;
+        cout << endl << (*it)->isArray << endl;
+        it++;
+    }
 }
 
 int MethodDefinition::evaluateSemantic(){
@@ -302,7 +314,7 @@ Type MethodInvocationExpr::getType(){
     while(paramIt != func->parameters.end() && argsIt != this->args.end()){
         string paramType = getTypeName((*paramIt)->type);
         string argType = getTypeName((*argsIt)->getType());
-        if( paramType != argType){
+        if(paramType != argType && argType != "INFERED"){
             cout<<"error: invalid conversion from: "<< argType <<" to " <<paramType<< " line: "<<this->line <<endl;
             exit(0);
         }
@@ -360,10 +372,35 @@ int PrintStatement::evaluateSemantic(){
 }
 
 int ForStatement::evaluateSemantic(){
+    if(this->conditionalExpr->getType() != BOOL){
+        cout<<"Expression of for must be boolean";
+        exit(0);
+    }
+    pushContext();
+    this->loopStatement->evaluateSemantic();
+    popContext();
     return 0;
 }
 
 int ForStatementExtended::evaluateSemantic(){
+    InitializerElementList * list = new InitializerElementList;
+    list->push_back(this->assignmentExpression);
+
+    Initializer * newAssignation = new Initializer(*list, this->line);
+
+    if(this->conditionalExpr->getType() != BOOL){
+        cout<<"Conditional expression of for must be boolean";
+        exit(0);
+    }
+    
+    if(this->additiveExpression->getType() != INT){
+        cout<<"Additive expression of for must be an integer";
+        exit(0);
+    }
+
+    pushContext();
+    this->loopStatement->evaluateSemantic();
+    popContext();
     return 0;
 }
 

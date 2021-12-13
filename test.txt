@@ -4,7 +4,12 @@ import "fmt"
 
 import  "math/rand"
 
+func hola() {
+  var i := 1
+  
+    fmt.Println("test")
 
+}
 
 func main() {
 
