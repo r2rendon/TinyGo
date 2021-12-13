@@ -46,7 +46,6 @@
     SingleExprList * single_expr_list_t;
 }
 
-%token TK_MAIN
 %token<string_t> TK_LIT_STRING TK_ID
 %token<int_t> TK_LIT_INT
 %token<float_t> TK_LIT_FLOAT
@@ -100,25 +99,23 @@ package: TK_PACKAGE TK_ID
     | TK_IMPORT TK_LIT_STRING
     ;
 
-input: external_declaration TK_MAIN block_statement {$$ = $1; $$->push_back($3);}
-    | TK_MAIN block_statement {$$ = new StatementList; $$->push_back($2);}
+input: input external_declaration {$$ = $1; $$->push_back($2);}
+    |  external_declaration {$$ = new StatementList; $$->push_back($1);}
     ;
 
 external_declaration: func_definition {$$ = $1;}
-    | declarations {$$ = new GlobalDeclaration($1);}
+    | declaration {$$ = new GlobalDeclaration($1);}
     ;
 
 func_definition: TK_FUNC TK_ID '(' ')' block_statement {
         ParameterList * pm = new ParameterList;
-        $$ = new MethodDefinition($2, *pm, , $5, yylineno);
+        $$ = new MethodDefinition($2, *pm, $5, yylineno);
         delete pm;
     }
     | TK_FUNC TK_ID '(' ')' '{' '}' {
         ParameterList * pm = new ParameterList;
-        Statement * s = new Statement;
-        $$ = new MethodDefinition($2, *pm, *s, yylineno);
+        $$ = new MethodDefinition($2, *pm, NULL, yylineno);
         delete pm;
-        delete s;
     }
     | TK_FUNC TK_ID '(' parameters_type_list ')' block_statement {
         $$ = new MethodDefinition($2, $4, $6, yylineno);
@@ -131,8 +128,7 @@ declarations: declarations declaration { $$ = $1; $$->push_back($2); }
     ;
 
 declaration: TK_VAR declarator_list type { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
-    | TK_VAR declarator_list { 
-        $$ = new Declaration(Type::infered, *$2, yylineno); 
+    | TK_VAR declarator_list {   $$ = new Declaration((Type)INT, *$2, yylineno); 
         delete $2;
     }
     ;
@@ -164,14 +160,14 @@ initializer: assignment_expression {
 ;
 
 parameters_type_list: parameters_type_list ',' parameter_declaration {$$ = $1; $$->push_back($3);}
-    | parameter_declaration { $$ = new ParameterList; $$->push_back($1); }
-    | declarator { $$ = new Declarator; $$ = $1;}
-    ;
+                   | parameters_type_list parameter_declaration {$$ = $1; $$->push_back($2);}
+                   | parameter_declaration { $$ = new ParameterList; $$->push_back($1); }
+                   ;
 
-parameter_declaration: type declarator { $$ = new Parameter((Type)$1, $2, false, yylineno); }
-    | type { $$ = new Parameter((Type)$1, NULL, false, yylineno); }
-    | type '[' ']' { $$ = new Parameter((Type)$1, NULL, true, yylineno); }
-    ;
+parameter_declaration: declarator type{ $$ = new Parameter((Type)$2, $1, false, yylineno); }
+                     | type { $$ = new Parameter((Type)$1, NULL, false, yylineno); }
+                     | type '[' ']'  { $$ = new Parameter((Type)$1, NULL, true, yylineno); }
+                    ;
 
 
 init_list: init_list ',' logical_or_expression { $$ = $1; $$->push_back($3); }
