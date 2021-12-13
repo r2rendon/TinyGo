@@ -10,7 +10,7 @@ class ContextStack{
 class FunctionInfo{
     public:
         Type returnType;
-        list<Parameter *> parameters;
+        ParameterList parameters;
 };
 
 map<string, Type> globalVariables = {};
@@ -294,7 +294,7 @@ Type MethodInvocationExpr::getType(){
     }
 
     list<Parameter *>::iterator paramIt = func->parameters.begin();
-    list<Expr *>::iterator argsIt =this->args.begin();
+    list<Expr *>::iterator argsIt = this->args.begin();
     while(paramIt != func->parameters.end() && argsIt != this->args.end()){
         string paramType = getTypeName((*paramIt)->type);
         string argType = getTypeName((*argsIt)->getType());
@@ -355,10 +355,28 @@ int PrintStatement::evaluateSemantic(){
     return this->expr->getType();
 }
 
+int ForStatement::evaluateSemantic(){
+    return 0;
+}
+
+int ForStatementExtended::evaluateSemantic(){
+    return 0;
+}
+
+int ContinueStatement::evaluateSemantic(){
+    return 0;
+}
+
+int BreakStatement::evaluateSemantic(){
+    return 0;
+}
+
 IMPLEMENT_BINARY_GET_TYPE(Add);
 IMPLEMENT_BINARY_GET_TYPE(Sub);
 IMPLEMENT_BINARY_GET_TYPE(Mul);
 IMPLEMENT_BINARY_GET_TYPE(Div);
+IMPLEMENT_BINARY_GET_TYPE(Mod);
+IMPLEMENT_BINARY_GET_TYPE(Exp);
 IMPLEMENT_BINARY_GET_TYPE(Assign);
 IMPLEMENT_BINARY_GET_TYPE(PlusEqual);
 IMPLEMENT_BINARY_GET_TYPE(MinusEqual);

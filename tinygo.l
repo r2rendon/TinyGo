@@ -29,9 +29,8 @@ DIGIT [0-9]
 "for" {return TK_FOR;}
 "import" {return TK_IMPORT;}
 "return" {return TK_RETURN ;}
-"true" { isstringstream(yytext) >> std::boolalpha >> yylval.bool_t; return TK_TRUE; }
-"false" { isstringstream(yytext) >> std::boolalpha >> yylval.bool_t; return TK_TRUE; }
-"func main()" {return TK_MAIN ;}
+"true" { yylval.bool_t = true; return TK_TRUE; }
+"false" { yylval.bool_t = false; return TK_FALSE; }
 \".*\" { yylval.string_t = strdup(yytext); return TK_LIT_STRING; }
 {DIGIT}+ { yylval.int_t = atoi(yytext); return TK_LIT_INT; }
 {DIGIT}+"."{DIGIT}+ { yylval.float_t = atof(yytext); return TK_LIT_FLOAT; }

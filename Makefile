@@ -8,10 +8,10 @@ ast.o: ast.cpp ast.h
 	g++ -g -c -o $@ $<
 
 main.o:	main.cpp
-	g++ -g -c -o $@ $<
+	g++ -g -c -o $@ $< -Wall
 	
 ${TARGET}_lexer.o: ${TARGET}_lexer.cpp
-	g++ -g -c -o $@ $<
+	g++ -g -c -o $@ $< -Wall
 
 ${TARGET}_lexer.cpp:  ${TARGET}.l
 	flex -o $@ $<
@@ -20,7 +20,7 @@ ${TARGET}_parser.cpp: ${TARGET}.y
 	bison --defines=tokens.h -o $@ $<
 
 ${TARGET}_parser.o: ${TARGET}_parser.cpp
-	g++ -g -c -o $@ $<
+	g++ -g -c -o $@ $< -Wall
 
 clean:
 	rm -f *.o
