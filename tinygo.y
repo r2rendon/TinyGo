@@ -1,5 +1,5 @@
 %code requires{
-    #include "ast.h"
+   #include "ast.h"
 }
 
 %{
@@ -33,17 +33,16 @@
     Expr * expr_t;
     ArgumentList * argument_list_t;
     Statement * statement_t;
-    StatementList * statement_list_t;
-    InitDeclaratorList * init_declarator_list_t;
+    StatementList * statements_t;
+    InitDeclaratorList * declarator_list_t;
     Init * init_t;
     Declarator * declarator_t;
     Initializer * initializer_t;
-    InitializerElementList * initializer_list_t;
+    InitializerElementList * init_list_t;
     Declaration * declaration_t;
     DeclarationList * declaration_list_t;
     Parameter * parameter_t;
     ParameterList * parameter_list_t;
-    ArrayInitializerExpression * array_initializer_expression_t;
     SingleExprList * single_expr_list_t;
 }
 
@@ -63,25 +62,23 @@
 %token TK_OR TK_AND
 %token TK_NOT_EQUAL TK_GREATER_OR_EQUAL TK_LESS_OR_EQUAL TK_TIMES_EQUAL TK_EXPONENT_EQUAL TK_DIVIDE_EQUAL TK_MOD_EQUAL
 
+%type<string_t> concat_list
 %type<expr_t> assignment_expression logical_or_expression
-%type<statement_list_t> statements input
-%type<statement_t> external_declaration func_definition block_statement return_statement statement
+%type<statements_t> statements input
+%type<statement_t> external_declaration func_definition block_statement statement
 %type<declaration_t> declaration
 %type<declaration_list_t> declarations
 %type<initializer_t> initializer
-%type<initializer_list_t> init_list
+%type<init_list_t> init_list declarator_list
+%type<init_t> init_declarator
 %type<declarator_t> declarator
-// %type<init_t> init
-%type<init_declarator_list_t> declarator_list
 %type<parameter_t> parameter_declaration
 %type<parameter_list_t> parameters_type_list
 %type<int_t> type assignment_operator
 %type<expr_t> constant expression logical_and_expression additive_expression multiplicative_expression equality_expression relational_expression
 %type<expr_t> single_expression postfix_expression primary_expression
 // %type<argument_list_t> argument_expression_list
-%type <statement_t> if_statement for_statement expression_statement
-%type <array_initializer_expression_t> array_initializer_expression
-%type <single_expr_list_t> single_expression_list
+%type <statement_t> if_statement for_statement expression_statement jump_statement print_statement
 // TO-DO que sea $1 por packages
 %%
 
@@ -103,8 +100,8 @@ package: TK_PACKAGE TK_ID
     | TK_IMPORT TK_LIT_STRING
     ;
 
-input: external_declaration TK_MAIN block_statement {$$->push_back($1); $$ = $3;}
-    | TK_MAIN block_statement {$$ = $2;}
+input: external_declaration TK_MAIN block_statement {$$ = $1; $$->push_back($3);}
+    | TK_MAIN block_statement {$$ = new StatementList; $$->push_back($2);}
     ;
 
 external_declaration: func_definition {$$ = $1;}
@@ -133,6 +130,39 @@ declarations: declarations declaration { $$ = $1; $$->push_back($2); }
     | declaration {$$ = new DeclarationList; $$->push_back($1);}
     ;
 
+declaration: TK_VAR declarator_list type { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
+    | TK_VAR declarator_list { 
+        $$ = new Declaration(Type::infered, *$2, yylineno); 
+        delete $2;
+    }
+    ;
+
+
+declarator_list: declarator_list ',' init_declarator { $$ = $1; $$->push_back($3); }
+                | declarator_list init_declarator { $$ = $1; $$->push_back($2); }
+                | init_declarator { $$ = new InitDeclaratorList; $$->push_back($1); }
+                ;
+
+      
+init_declarator: declarator {$$ = new Init($1, NULL, yylineno);}
+    | declarator '=' initializer { $$ = new Init($1, $3, yylineno); }
+    | declarator ':' '=' initializer { $$ = new Init($1, $4, yylineno); }
+    ;
+
+declarator: TK_ID {$$ = new Declarator($1, NULL, false, yylineno);}
+          | TK_LIT_STRING { $$ = new Declarator($1, NULL, false, yylineno);}
+          | TK_ID '[' assignment_expression ']' { $$ = new Declarator($1, $3, true, yylineno);}
+          | TK_ID '[' ']' {$$ = new Declarator($1, NULL, true, yylineno);}
+  
+initializer: assignment_expression {
+    InitializerElementList * list = new InitializerElementList;
+    list->push_back($1);
+    $$ = new Initializer(*list, yylineno);
+}
+           | '{' init_list '}'{ $$ = new Initializer(*$2, yylineno); delete $2;  }
+           | '[' ']' type  '{' init_list '}'{ $$ = new Initializer(*$5, yylineno); delete $5;  }
+;
+
 parameters_type_list: parameters_type_list ',' parameter_declaration {$$ = $1; $$->push_back($3);}
     | parameter_declaration { $$ = new ParameterList; $$->push_back($1); }
     | declarator { $$ = new Declarator; $$ = $1;}
@@ -143,29 +173,6 @@ parameter_declaration: type declarator { $$ = new Parameter((Type)$1, $2, false,
     | type '[' ']' { $$ = new Parameter((Type)$1, NULL, true, yylineno); }
     ;
 
-declaration: TK_VAR declarator_list type { $$ = new Declaration((Type)$3, *$2, yylineno); delete $2;  }
-    | TK_VAR declarator_list type initializer { $$ = new Declaration((Type)$3, *$2, *$4, yylineno); delete $2;  }
-    | TK_VAR declarator_list initializer { 
-        $$ = new Declaration(Type::infered, *$2, *$3, yylineno); 
-        delete $2;
-    }
-    ;
-
-declarator_list: declarator_list ',' declarator { $$ = $1; $$->push_back($3); }
-    | declarator { $$ = new InitDeclaratorList; $$->push_back($1); }
-    ;
-
-declarator: TK_ID {$$ = new Declarator($1, NULL, false, yylineno);}
-    | TK_ID '[' expression ']' { $$ = new Declarator($1, $3, true, yylineno);}
-    ;
-
-initializer: '='assignment_expression {
-        InitializerElementList * list = new InitializerElementList;
-        list->push_back($2);
-        $$ = new Initializer(*list, yylineno);
-    }
-    | init_list { $$ = new Initializer(*$1, yylineno); delete $1;}
-    ;
 
 init_list: init_list ',' logical_or_expression { $$ = $1; $$->push_back($3); }
     | logical_or_expression {$$ = new InitializerElementList; $$->push_back($1);}
@@ -199,6 +206,7 @@ additive_expression:  additive_expression '+' multiplicative_expression { $$ = n
 multiplicative_expression: multiplicative_expression '*' single_expression { $$ = new MulExpr($1, $3, yylineno); }
     | multiplicative_expression '/' single_expression { $$ = new DivExpr($1, $3, yylineno); }
     | multiplicative_expression '%' single_expression { $$ = new ModExpr($1, $3, yylineno); }
+    | multiplicative_expression '^' single_expression { $$ = new ExpExpr($1, $3, yylineno);}
     | single_expression {$$ = $1;}
     ;
 
@@ -212,11 +220,6 @@ postfix_expression: primary_expression {$$ = $1;}
     | postfix_expression '(' parameters_type_list ')' { $$ = new MethodInvocationExpr((IdExpr*)$1, *$3, yylineno); }
     | postfix_expression TK_PLUS_PLUS { $$ = new PostIncrementExpr((IdExpr*)$1, yylineno); }
     | postfix_expression TK_MINUS_MINUS { $$ = new PostDecrementExpr((IdExpr*)$1, yylineno); }
-    | '[' ']' type '{' array_initializer_expression '}' { $$ = new ArrayInitializerExpression($3, *$5, yylineno)}
-    ;
-
-array_initializer_expression: array_initializer_expression ',' constant { $$ = $1; $$->push_back($3); }
-    | constant { $$ = new ArrayInitializer; $$->push_back($1); }
     ;
 
 primary_expression: '(' expression ')' {$$ = $2;}
@@ -226,16 +229,10 @@ primary_expression: '(' expression ')' {$$ = $2;}
     ;
 
 expression: assignment_expression {$$ = $1;}
-    ;
+          ;
 
-assignment_expression: single_expression assignment_operator assignment_expression
-    | single_expression assignment_operator assignment_expression
+assignment_expression: single_expression assignment_operator assignment_expression  
     | logical_or_expression
-    | single_expression
-    ;
-
-single_expression_list: single_expression_list ',' single_expression { $$ = $1; $$->push_back($3) }
-    | single_expression { $$ = new SingleExpr; $$->push_back($1) }
     ;
 
 block_statement: '{' statements '}' { 
@@ -254,50 +251,45 @@ block_statement: '{' statements '}' {
     ;
 
 statements: statements statement { $$ = $1; $$->push_back($2); }
-    | statement { $$ = new StatementList; $$->push_back($1); }
-    ;
+              | statements expression_statement { $$ = $1; $$->push_back($2); }
+              | statement { $$ = new StatementList; $$->push_back($1); }
+              | expression_statement { $$ = new StatementList; $$->push_back($1); }
+              ;
 
-statement: expression_statement {$$ = $1;}
-    | if_statement {$$ = $1;}
+statement:  if_statement {$$ = $1;}
     | block_statement {$$ = $1;}
-    | return_statement {$$ = $1;}
-    | TK_PRINT '(' parameters_type_list')' { $$ = new PrintStatement(*$3, yylineno); }
-    | TK_PRINT '(' TK_LIT_STRING')' {
-        StringExpr * se = new StringExpr($3, yylineno);
-        $$ = new PrintStatement(*se, yylineno);
-        delete se;
-    }
-    | TK_PRINT '(' TK_LIT_STRING ',' expression ')' {
-        StringExpr * se = new StringExpr($3+$5, yylineno);
-        $$ = new PrintStatement(*se, yylineno);
-        delete se;
-    }
-    | for_statement {$$ = $1}
-    | TK_CONTINUE { $$ = new ContinueStatement(yylineno); }
-    | TK_BREAK { $$ = new BreakStatement(yylineno); }
-    ;
+    | jump_statement {$$ = $1;}
+    | for_statement { $$ = $1;}
+    | print_statement { $$ = $1; }
+
+jump_statement: TK_RETURN expression {$$ = new ReturnStatement($2, yylineno);}
+              | TK_BREAK { $$ = new BreakStatement(yylineno);}
+              | TK_CONTINUE { $$ = new ContinueStatement(yylineno);}
+              | TK_RETURN { $$ = new ReturnStatement(NULL, yylineno);}
 
 if_statement: TK_IF expression statement {$$ = new IfStatement($2, $3, yylineno);}
     | TK_IF expression statement TK_ELSE statement {$$ = new ElseStatement($2, $3, $5, yylineno);}
     ;
 
+print_statement: TK_PRINT '(' concat_list ')' {$$ = new PrintStatement($3,NULL,yylineno);}
+               | TK_PRINT '(' concat_list ',' expression ')'{$$ = new PrintStatement($3,$5,yylineno);}
+               | TK_PRINT '(' expression ')' {$$ = new PrintStatement(NULL,$3,yylineno);}
+               ;
+concat_list: concat_list ',' TK_LIT_STRING { $$ = $1;}
+           | TK_LIT_STRING {$$=$1;}
+           | TK_ID { $$ = $1;}
+            ;
 for_statement: TK_FOR expression statement { $$ = new ForStatement($2, $3, yylineno); }
-    | TK_FOR statement {
-        BoolExpr * be = new BoolExpr(true, yylineno);
-        $$ = new ForStatement(*be, $2, yylineno);
-    }
+    | TK_FOR statement  { {$$ = new ForStatement(NULL,$2,yylineno);} }
     | TK_FOR assignment_expression ';' expression ';' additive_expression statement {
-        $$ = new ForStatement($2, $4, $6, yylineno);
-    }
-    ;
-
-return_statement: TK_RETURN expression { $$ = ReturnStatement(*$2, yylineno); }
+        $$ = new ForStatementExtended($2, $4, $6,$7, yylineno);    }
     ;
 
 expression_statement: expression {$$ = new ExprStatement($1, yylineno);}
     ;
 
-assignment_operator: '=' { $$ = EQUAL; }
+assignment_operator: ':' '=' { $$ = EQUAL; }
+    |'=' { $$ = EQUAL; }
     | TK_PLUS_EQUAL {$$ = PLUSEQUAL; }
     | TK_MINUS_EQUAL { $$ = MINUSEQUAL; }
     | TK_AND_EQUAL { $$ = ANDEQUAL; }

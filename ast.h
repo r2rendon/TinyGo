@@ -107,18 +107,12 @@ class Declaration{
             this->line = line;
         }
         
-        Declaration(Type type, InitDeclaratorList declarations, Initializer initializer, int line){
-            this->type = type;
-            this->declarations = declarations;
-            this->line = line;
-            this->initializer = initializer;
-        }
         Type type;
         InitDeclaratorList declarations;
         int line;
-        Initializer initializer;
         int evaluateSemantic();
 };
+
 
 class Parameter{
     public:
@@ -328,25 +322,29 @@ class IfStatement : public Statement{
 
 class ForStatement : public Statement{
     public:
-        enum ForTypes {
-            ADDITIVE,
-            CONDITIONAL
-        };
-
         ForStatement(Expr * conditionalExpr, Statement * loopStatement, int line){
             this->conditionalExpr = conditionalExpr;
             this->loopStatement = loopStatement;
             this->line = line;
-            this->forType = CONDITIONAL;
         }
-        
-        ForStatement(Expr * assignmentExpression, Expr * conditionalExpr, Expr * additiveExpression, Statement * loopStatement, int line){
+        Expr* conditionalExpr;
+        Statement * loopStatement;
+        int line;
+        int evaluateSemantic();
+        StatementKind getKind(){
+            return FOR_STATEMENT;
+        }
+};
+       
+  class ForStatementExtended: public Statement{
+    public: 
+
+        ForStatementExtended(Expr * assignmentExpression, Expr * conditionalExpr, Expr * additiveExpression, Statement * loopStatement, int line){
             this->conditionalExpr = conditionalExpr;
             this->assignmentExpression = assignmentExpression;
             this->additiveExpression = additiveExpression;
             this->loopStatement = loopStatement;
             this->line = line;
-            this->forType = ADDITIVE;
         }
 
         Expr * conditionalExpr;
@@ -354,7 +352,6 @@ class ForStatement : public Statement{
         Expr * additiveExpression;
         Statement * loopStatement;
         int evaluateSemantic();
-        ForTypes forType;
         StatementKind getKind(){return FOR_STATEMENT;}
 };
 
@@ -397,18 +394,14 @@ class ReturnStatement : public Statement{
 
 class PrintStatement : public Statement{
     public:
-        PrintStatement(Expr * expr, int line){
+        PrintStatement(string string,Expr * expr, int line){
+            localString = string;
             this->expr = expr;
             this->line = line;
         }
         
-        PrintStatement(ParameterList * paramlist, int line){
-            this->paramlist = paramlist;
-            this->line = line;
-        }
-
+        string localString;
         Expr * expr;
-        ParameterList * paramlist;
         int evaluateSemantic();
         StatementKind getKind(){return PRINT_STATEMENT;}
 };
