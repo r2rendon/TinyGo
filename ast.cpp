@@ -25,6 +25,7 @@ map<string, Type> resultTypes ={
     {"INT,INFERED", INT},
     {"INFERED,FLOAT", FLOAT},
     {"FLOAT,INFERED", FLOAT},
+    {"INFERED,INFERED", INFERED},
 };
 
 string getTypeName(Type type){
