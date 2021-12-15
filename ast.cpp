@@ -175,13 +175,13 @@ void addMethodDeclaration(string id, int line, ParameterList params){
     methods[id]->parameters = params;
 
     // Testing
-    list<Parameter* >::iterator it = params.begin();
-    while(it != params.end()){
-        string test = getTypeName((*it)->type);
-        cout << endl << "Type: " << test << endl;
-        cout << endl << (*it)->isArray << endl;
-        it++;
-    }
+    // list<Parameter* >::iterator it = params.begin();
+    // while(it != params.end()){
+    //     string test = getTypeName((*it)->type);
+    //     cout << endl << "Type: " << test << endl;
+    //     cout << endl << (*it)->isArray << endl;
+    //     it++;
+    // }
 }
 
 int MethodDefinition::evaluateSemantic(){
@@ -372,10 +372,13 @@ int PrintStatement::evaluateSemantic(){
 }
 
 int ForStatement::evaluateSemantic(){
-    if(this->conditionalExpr->getType() != BOOL){
-        cout<<"Expression of for must be boolean";
-        exit(0);
+    if (this->conditionalExpr != NULL){
+        if(this->conditionalExpr->getType() != BOOL){
+            cout<<"Expression of for must be boolean";
+            exit(0);
+        }
     }
+    
     pushContext();
     this->loopStatement->evaluateSemantic();
     popContext();

@@ -6,6 +6,11 @@ import "fmt"
 
 func BubbleSort(array[] int, size int) {
 
+/*
+
+   accept types in methods
+
+   */
   var i int
   var j int
   for i:=0; i< size-1; i++ {
@@ -36,6 +41,6 @@ func main() {
 
   var array := []int{11, 14, 3, 8, 18, 17, 43}
 
-  fmt.Println(BubbleSort(array, size))
+  fmt.Println(BubbleSort(array, size, 10))
 
 }

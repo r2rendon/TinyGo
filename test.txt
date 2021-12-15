@@ -16,17 +16,20 @@ func main() {
    /*
 
    Operadores basicos
+   variables inferidas truenan
 
    */
 
    var a = 1
    var b = 2
 
+   var x = a + b
+
    fmt.Println(a)
 
    fmt.Println("b = ", b)
 
-   fmt.Println("a+b = ")
+   fmt.Println("a+b = ", a + b)
 
    fmt.Println("a-b = ")
 

@@ -336,9 +336,8 @@ class ForStatement : public Statement{
         }
 };
        
-  class ForStatementExtended: public Statement{
-    public: 
-
+class ForStatementExtended: public Statement{
+    public:
         ForStatementExtended(Expr * assignmentExpression, Expr * conditionalExpr, Expr * additiveExpression, Statement * loopStatement, int line){
             this->conditionalExpr = conditionalExpr;
             this->assignmentExpression = assignmentExpression;

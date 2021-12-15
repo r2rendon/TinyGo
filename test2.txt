@@ -4,7 +4,8 @@ import "fmt"
 
 
 func main() {
-  var i int
+  var i,n int
+  var j int = 2
   var x := 2
 
   for i <= 3 {

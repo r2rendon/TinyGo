@@ -4,7 +4,10 @@ import "fmt"
 
 func main() {
   var i := 1
-  
-    fmt.Println("test")
+  var floatTest float32 = 2.3
+  var boolTest bool = true
+  var stringTest string = "Test de string"
+
+  fmt.Println("test")
 
 }
